@@ -2,8 +2,52 @@ import { styled } from "@mui/material/styles";
 import Tagline from "../../components/Tagline";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { BASE_URL } from "../../config";
 
 const Cart = () => {
+  const [cart, setCart] = useState(null);
+
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/carts/user/${userId}`);
+        setCart(response.data);
+      } catch (error) {
+        console.error(
+          "Error details:",
+          error.response ? error.response.data : error.message
+        );
+        console.error("Error fetching cart:", error);
+      }
+    };
+
+    fetchCart();
+  }, [userId]);
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await axios.delete(
+        `${BASE_URL}/carts/user/${userId}/product/${productId}`
+      );
+      setCart((prevCart) => ({
+        ...prevCart,
+        products: prevCart.products.filter(
+          (item) => item.product._id !== productId
+        ),
+      }));
+    } catch (error) {
+      console.error("Error deleting product from cart:", error);
+    }
+  };
+
+  if (!cart) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <>
       <BannerContainer>
@@ -20,7 +64,6 @@ const Cart = () => {
           </EnglishBanner>
         </TextBanner>
       </BannerContainer>
-      {/* Cart */}
       <Section>
         <CartList>
           <thead>
@@ -34,20 +77,26 @@ const Cart = () => {
             </CartListHeader>
           </thead>
           <tbody>
-            <CartListRow>
-              <CartListCell>
-                <CartListImage src="./img/detail-pro.svg" alt="Product" />
-              </CartListCell>
-              <CartListCell>Asgaard sofa</CartListCell>
-              <CartListCell>25.000.000đ</CartListCell>
-              <CartListCell>
-                <CartQuantity>1</CartQuantity>
-              </CartListCell>
-              <CartListCell>25.000.000đ</CartListCell>
-              <CartListCell>
-                <DeleteForeverIcon />
-              </CartListCell>
-            </CartListRow>
+            {cart.products.map((item) => (
+              <CartListRow key={item.product._id}>
+                <CartListCell>
+                  <CartListImage src={item.product.image} alt="Product" />
+                </CartListCell>
+                <CartListCell>{item.product.title}</CartListCell>
+                <CartListCell>{item.product.price}</CartListCell>
+                <CartListCell>
+                  {item.quantity} {/* Hiển thị số lượng sản phẩm */}
+                </CartListCell>
+                <CartListCell>
+                  {item.product.price * item.quantity}
+                </CartListCell>
+                <CartListCell>
+                  <DeleteForeverIcon
+                    onClick={() => handleDeleteProduct(item.product._id)}
+                  />
+                </CartListCell>
+              </CartListRow>
+            ))}
           </tbody>
         </CartList>
 
@@ -55,11 +104,21 @@ const Cart = () => {
           <BillName>Cart Totals</BillName>
           <BillSubtotal>
             <BillTitle>Subtotal</BillTitle>
-            <PriceSubtotal>25.000.000đ</PriceSubtotal>
+            <PriceSubtotal>
+              {cart.products.reduce(
+                (sum, item) => sum + item.product.price * item.quantity,
+                0
+              )}
+            </PriceSubtotal>
           </BillSubtotal>
           <BillTotal>
             <BillTitle>Total</BillTitle>
-            <PriceTotal>25.000.000đ</PriceTotal>
+            <PriceTotal>
+              {cart.products.reduce(
+                (sum, item) => sum + item.product.price * item.quantity,
+                0
+              )}
+            </PriceTotal>
           </BillTotal>
 
           <Link to={"/check-out"}>
@@ -68,12 +127,12 @@ const Cart = () => {
         </CartBill>
       </Section>
 
-      {/* Tagline */}
       <Tagline />
     </>
   );
 };
 
+// CSS
 const BannerContainer = styled("div")({
   position: "relative",
   textAlign: "center",
@@ -135,14 +194,6 @@ const CartListImage = styled("img")({
 
 const CartListCell = styled("td")({
   padding: "10px 0",
-});
-
-const CartQuantity = styled("p")({
-  border: "1px solid #9f9f9f",
-  borderRadius: "5px",
-  width: "20%",
-  textAlign: "center",
-  marginLeft: "15px",
 });
 
 const CartBill = styled("div")({

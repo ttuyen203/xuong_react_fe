@@ -1,7 +1,6 @@
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -15,9 +14,6 @@ import { ApiResProDetail, Product } from "../../types/Product";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 import { RootState } from "../../redux/store";
-// import { useLoading } from "../../context/LoadingContext";
-// import CircularProgress from "@mui/material/CircularProgress";
-// import Box from "@mui/material/Box";
 import { useSelector, useDispatch } from "react-redux";
 import { setLoading } from "../../redux/loadingSlice";
 import { AppDispatch } from "../../redux/store";
@@ -28,21 +24,19 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ProductDetail = () => {
   const { id } = useParams();
   const [data, setData] = useState<Product>();
+  const [quantity, setQuantity] = useState(1); // State to manage quantity
   const navigate = useNavigate();
-  // const { isLoading, setIsLoading } = useLoading();
   const dispatch: AppDispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
   useEffect(() => {
     const fetchData = () => {
-      // setIsLoading(true);
       dispatch(setLoading(true));
       axios
         .get<ApiResProDetail>(`${BASE_URL}/products/${id}`)
         .then(async (response) => {
           await delay(1000);
           setData(response.data.data);
-          console.log(response.data.data);
           dispatch(setLoading(false));
         })
         .catch((err) => {
@@ -52,13 +46,36 @@ const ProductDetail = () => {
           }
         })
         .finally(() => {
-          // setIsLoading(false);
           dispatch(setLoading(false));
         });
     };
 
     fetchData();
   }, [id, navigate, dispatch]);
+
+  const handleQuantityChange = (change: number) => {
+    setQuantity((prev) => Math.max(prev + change, 1));
+  };
+
+  const userId = localStorage.getItem("userId");
+  console.log(userId);
+
+  const handleAddToCart = async () => {
+    try {
+      await axios.post(`${BASE_URL}/carts`, {
+        user: userId,
+        product: data?._id,
+        quantity,
+      });
+      alert("Product added to cart successfully!");
+    } catch (error) {
+      // console.error(
+      //   "Error details:",
+      //   error.response ? error.response.data : error.message
+      // );
+      alert("Failed to add product to cart");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -67,19 +84,6 @@ const ProductDetail = () => {
       </LoadingContainer>
     );
   }
-
-  // if (isLoading) {
-  //   return (
-  //     <Box
-  //       display="flex"
-  //       justifyContent="center"
-  //       alignItems="center"
-  //       height="100vh"
-  //     >
-  //       <CircularProgress />
-  //     </Box>
-  //   );
-  // }
 
   return (
     <div>
@@ -132,15 +136,15 @@ const ProductDetail = () => {
             </ColorList>
             <DetailItemContainer>
               <DetailQuantity>
-                <QuantityIcon>
+                <QuantityIcon onClick={() => handleQuantityChange(-1)}>
                   <RemoveCircleIcon />
                 </QuantityIcon>
-                1
-                <QuantityIcon>
+                {quantity}
+                <QuantityIcon onClick={() => handleQuantityChange(1)}>
                   <AddCircleIcon />
                 </QuantityIcon>
               </DetailQuantity>
-              <DetailAction>
+              <DetailAction onClick={handleAddToCart}>
                 <DetailActionText>Add to Cart</DetailActionText>
               </DetailAction>
               <DetailAction>
@@ -204,7 +208,7 @@ const ProductDetail = () => {
   );
 };
 
-// Css
+// CSS
 const BreadcrumbContainer = styled("div")({
   backgroundColor: "#f9f1e7",
   padding: "2rem 5rem",
@@ -251,175 +255,149 @@ const MainImg = styled("img")({
 });
 
 const DetailInfoContainer = styled("div")({
-  width: "50%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
 });
 
-const DetailName = styled("p")({
-  fontWeight: 400,
-  fontSize: "42px",
-});
-
-const DetailPrice = styled("p")({
-  color: "#9f9f9f",
-  fontWeight: 500,
+const DetailName = styled("h2")({
   fontSize: "24px",
+  fontWeight: "bold",
+});
+
+const DetailPrice = styled("span")({
+  fontSize: "18px",
+  fontWeight: "600",
 });
 
 const RatingContainer = styled("div")({
   display: "flex",
-  gap: "10px",
   alignItems: "center",
-  marginTop: "1rem",
+  gap: "5px",
 });
 
 const DetailIntro = styled("p")({
-  textAlign: "justify",
-  marginTop: "1rem",
+  fontSize: "16px",
+  lineHeight: "1.5",
+  marginTop: "10px",
 });
 
-const SizeTitle = styled("p")({
-  fontWeight: 400,
-  fontSize: "14px",
-  color: "#9f9f9f",
-  marginBottom: "10px",
-  marginTop: "10px",
+const SizeTitle = styled("h3")({
+  fontSize: "18px",
+  fontWeight: "600",
 });
 
 const SizeList = styled("div")({
   display: "flex",
-  gap: "15px",
-  textAlign: "center",
+  gap: "10px",
 });
 
-const SizeItem = styled("p")({
-  width: "30px",
-  height: "30px",
-  padding: "5px 0",
-  backgroundColor: "#f9f1e7",
+const SizeItem = styled("span")({
+  backgroundColor: "#f0f0f0",
+  padding: "10px",
   borderRadius: "5px",
-  fontSize: "13px",
-  cursor: "pointer",
-  "&:hover": {
-    backgroundColor: "#b88e2f",
-    color: "#fff",
-  },
 });
 
-const ColorTitle = styled("p")({
-  fontWeight: 400,
-  fontSize: "14px",
-  color: "#9f9f9f",
-  marginBottom: "10px",
-  marginTop: "10px",
+const ColorTitle = styled("h3")({
+  fontSize: "18px",
+  fontWeight: "600",
+  marginTop: "20px",
 });
 
 const ColorList = styled("div")({
   display: "flex",
-  gap: "15px",
-  textAlign: "center",
+  gap: "10px",
 });
 
 const ColorItem = styled("div")({
   width: "30px",
   height: "30px",
   borderRadius: "50%",
-  cursor: "pointer",
 });
 
 const DetailItemContainer = styled("div")({
   display: "flex",
-  marginTop: "20px",
   alignItems: "center",
-  textAlign: "center",
-  justifyContent: "space-between",
+  gap: "20px",
+  marginTop: "20px",
 });
 
 const DetailQuantity = styled("div")({
-  border: "1px solid #000",
-  padding: "10px",
-  borderRadius: "10px",
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  fontSize: "16px",
 });
 
-const QuantityIcon = styled(IconButton)({
-  padding: "10px",
+const QuantityIcon = styled("div")({
+  cursor: "pointer",
 });
 
-const DetailAction = styled("div")({
-  border: "1px solid #000",
-  padding: "10px 0",
-  borderRadius: "10px",
-  width: "180px",
+const DetailAction = styled("button")({
+  padding: "10px 20px",
+  backgroundColor: "#000",
+  color: "#fff",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "16px",
 });
 
-const DetailActionText = styled("p")({
-  margin: 0,
-});
-
-const DetailDesc = styled("div")({
-  borderTop: "1px solid #d9d9d9",
-  borderBottom: "1px solid #d9d9d9",
-  marginTop: "50px",
-});
+const DetailActionText = styled("span")({});
 
 const CategoryTagsContainer = styled("div")({
-  marginTop: "40px",
-  borderTop: "1px solid #d9d9d9",
+  marginTop: "30px",
 });
 
 const CategoryTagsList = styled("div")({
-  marginTop: "30px",
   display: "flex",
-  gap: "30px",
+  justifyContent: "space-between",
 });
 
 const CategoryTagsGroup = styled("div")({
   display: "flex",
   flexDirection: "column",
-  fontWeight: "400",
-  color: "#9f9f9f",
+  gap: "10px",
 });
 
 const DescTitle = styled("div")({
-  marginTop: "40px",
   display: "flex",
-  justifyContent: "center",
   alignItems: "center",
-  gap: "30px",
+  gap: "10px",
+  marginTop: "40px",
 });
 
-const TitleText = styled("p")({
-  fontSize: "24px",
-  fontWeight: 500,
-  margin: 0,
-  cursor: "pointer",
+const TitleText = styled("span")({
+  fontSize: "20px",
+  fontWeight: "bold",
 });
 
 const DescriptionText = styled("p")({
-  color: "#9f9f9f",
-  fontWeight: 400,
-  marginTop: "20px",
-  textAlign: "justify",
+  fontSize: "16px",
+  lineHeight: "1.5",
+  marginTop: "10px",
 });
 
 const DescImgContainer = styled("div")({
-  marginTop: "30px",
-  marginBottom: "50px",
   display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "40px",
+  gap: "10px",
+  marginTop: "20px",
 });
 
 const DescImage = styled("img")({
-  width: "40%",
-  backgroundColor: "rgb(249, 241, 231)",
-  height: "250px",
+  width: "50%",
+  borderRadius: "10px",
 });
 
 const LoadingContainer = styled("div")({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  height: "100vh",
+});
+
+const DetailDesc = styled("div")({
+  marginTop: "40px",
 });
 
 export default ProductDetail;

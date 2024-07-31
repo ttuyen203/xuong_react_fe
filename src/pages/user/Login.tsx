@@ -155,6 +155,7 @@ const Login = () => {
       console.log(res);
       navigate("/");
       localStorage.setItem("access-token", res.data.accessToken);
+      localStorage.setItem("userId", res.data.userInfo.userId);
     } catch (err) {
       Swal.fire({
         icon: "error",

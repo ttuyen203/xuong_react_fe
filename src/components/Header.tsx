@@ -90,7 +90,7 @@ const Header = () => {
         <a href="">
           <FavoriteIcon />
         </a>
-        <a href="cart.html">
+        <a href="/cart">
           <ShoppingCartIcon />
         </a>
       </BtnFunction>

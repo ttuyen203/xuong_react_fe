@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./counterSlice"; 
-import loadingReducer from "./loadingSlice"; 
+import counterReducer from "./counterSlice";
+import loadingReducer from "./loadingSlice";
 
 // Cấu hình store với các reducers
 const store = configureStore({
