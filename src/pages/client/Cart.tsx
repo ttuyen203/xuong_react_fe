@@ -1,51 +1,106 @@
 import { styled } from "@mui/material/styles";
 import Tagline from "../../components/Tagline";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import { Product } from "../../types/Product";
+
+interface CartProduct {
+  product: Product;
+  quantity: number;
+}
+
+interface Cart {
+  products: CartProduct[];
+}
 
 const Cart = () => {
-  const [cart, setCart] = useState(null);
-
+  const [cart, setCart] = useState<Cart | null>(null);
   const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/carts/user/${userId}`);
-        setCart(response.data);
-      } catch (error) {
-        console.error(
-          "Error details:",
-          error.response ? error.response.data : error.message
+        const response = await axios.get<Cart>(
+          `${BASE_URL}/carts/user/${userId}`
         );
-        console.error("Error fetching cart:", error);
+        setCart(response.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Error fetching cart:",
+            error.response ? error.response.data : error.message
+          );
+        } else {
+          console.error("Unexpected error:", error);
+        }
       }
     };
 
     fetchCart();
   }, [userId]);
 
-  const handleDeleteProduct = async (productId) => {
+  const handleDeleteProduct = async (productId: string) => {
     try {
       await axios.delete(
         `${BASE_URL}/carts/user/${userId}/product/${productId}`
       );
-      setCart((prevCart) => ({
-        ...prevCart,
-        products: prevCart.products.filter(
-          (item) => item.product._id !== productId
-        ),
-      }));
+      setCart((prevCart) => {
+        if (!prevCart || !prevCart.products) return prevCart;
+        return {
+          ...prevCart,
+          products: prevCart.products.filter(
+            (item) => item.product._id !== productId
+          ),
+        };
+      });
     } catch (error) {
       console.error("Error deleting product from cart:", error);
     }
   };
 
+  const handleCheckout = () => {
+    navigate("/check-out", { state: { cartProducts: cart?.products } });
+  };
+
   if (!cart) {
-    return <p>Loading...</p>;
+    return (
+      <Section>
+        <CartList>
+          <thead>
+            <CartListHeader>
+              <CartListHeaderCell></CartListHeaderCell>
+              <CartListHeaderCell>Product</CartListHeaderCell>
+              <CartListHeaderCell>Price</CartListHeaderCell>
+              <CartListHeaderCell>Quantity</CartListHeaderCell>
+              <CartListHeaderCell>Total</CartListHeaderCell>
+              <CartListHeaderCell></CartListHeaderCell>
+            </CartListHeader>
+          </thead>
+          <tbody>
+            <EmptyMessage>
+              <EmptyMessageCell colSpan={6}>
+                There are no products in the cart yet.
+              </EmptyMessageCell>
+            </EmptyMessage>
+          </tbody>
+        </CartList>
+        <CartBill>
+          <BillName>Cart Totals</BillName>
+          {/* <BillSubtotal>
+            <BillTitle>Subtotal</BillTitle>
+            <PriceSubtotal>0</PriceSubtotal>
+          </BillSubtotal> */}
+          <BillTotal>
+            <BillTitle>Total</BillTitle>
+            <PriceTotal>0</PriceTotal>
+          </BillTotal>
+        </CartBill>
+      </Section>
+    );
   }
 
   return (
@@ -72,7 +127,7 @@ const Cart = () => {
               <CartListHeaderCell>Product</CartListHeaderCell>
               <CartListHeaderCell>Price</CartListHeaderCell>
               <CartListHeaderCell>Quantity</CartListHeaderCell>
-              <CartListHeaderCell>Subtotal</CartListHeaderCell>
+              <CartListHeaderCell>Total</CartListHeaderCell>
               <CartListHeaderCell></CartListHeaderCell>
             </CartListHeader>
           </thead>
@@ -84,9 +139,7 @@ const Cart = () => {
                 </CartListCell>
                 <CartListCell>{item.product.title}</CartListCell>
                 <CartListCell>{item.product.price}</CartListCell>
-                <CartListCell>
-                  {item.quantity} {/* Hiển thị số lượng sản phẩm */}
-                </CartListCell>
+                <CartListCell>{item.quantity}</CartListCell>
                 <CartListCell>
                   {item.product.price * item.quantity}
                 </CartListCell>
@@ -102,15 +155,6 @@ const Cart = () => {
 
         <CartBill>
           <BillName>Cart Totals</BillName>
-          <BillSubtotal>
-            <BillTitle>Subtotal</BillTitle>
-            <PriceSubtotal>
-              {cart.products.reduce(
-                (sum, item) => sum + item.product.price * item.quantity,
-                0
-              )}
-            </PriceSubtotal>
-          </BillSubtotal>
           <BillTotal>
             <BillTitle>Total</BillTitle>
             <PriceTotal>
@@ -121,9 +165,7 @@ const Cart = () => {
             </PriceTotal>
           </BillTotal>
 
-          <Link to={"/check-out"}>
-            <BtnCheckout>Check Out</BtnCheckout>
-          </Link>
+          <BtnCheckout onClick={handleCheckout}>Check Out</BtnCheckout>
         </CartBill>
       </Section>
 
@@ -133,6 +175,19 @@ const Cart = () => {
 };
 
 // CSS
+const EmptyMessage = styled("tr")({
+  backgroundColor: "#f9f1e7",
+  textAlign: "center",
+  height: "100px",
+});
+
+const EmptyMessageCell = styled("td")({
+  padding: "20px",
+  fontSize: "1.2rem",
+  color: "#9f9f9f",
+  fontWeight: "bold",
+});
+
 const BannerContainer = styled("div")({
   position: "relative",
   textAlign: "center",
@@ -210,14 +265,6 @@ const BillName = styled("p")({
   marginBottom: "40px",
 });
 
-const BillSubtotal = styled("div")({
-  display: "flex",
-  gap: "2rem",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "20px",
-});
-
 const BillTotal = styled("div")({
   display: "flex",
   gap: "2rem",
@@ -228,11 +275,6 @@ const BillTotal = styled("div")({
 
 const BillTitle = styled("p")({
   fontWeight: 500,
-});
-
-const PriceSubtotal = styled("p")({
-  color: "#9f9f9f",
-  fontWeight: 400,
 });
 
 const PriceTotal = styled("p")({

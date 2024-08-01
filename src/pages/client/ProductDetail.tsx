@@ -1,6 +1,5 @@
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -18,13 +17,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { setLoading } from "../../redux/loadingSlice";
 import { AppDispatch } from "../../redux/store";
 import { CircularProgress } from "@mui/material";
+import { Bounce, toast } from "react-toastify";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [data, setData] = useState<Product>();
-  const [quantity, setQuantity] = useState(1); // State to manage quantity
+  const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
@@ -35,7 +35,7 @@ const ProductDetail = () => {
       axios
         .get<ApiResProDetail>(`${BASE_URL}/products/${id}`)
         .then(async (response) => {
-          await delay(1000);
+          await delay(500);
           setData(response.data.data);
           dispatch(setLoading(false));
         })
@@ -58,7 +58,7 @@ const ProductDetail = () => {
   };
 
   const userId = localStorage.getItem("userId");
-  console.log(userId);
+  // console.log(userId);
 
   const handleAddToCart = async () => {
     try {
@@ -67,13 +67,33 @@ const ProductDetail = () => {
         product: data?._id,
         quantity,
       });
-      alert("Product added to cart successfully!");
+      toast.success("Sản phẩm đã được thêm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } catch (error) {
       // console.error(
       //   "Error details:",
       //   error.response ? error.response.data : error.message
       // );
-      alert("Failed to add product to cart");
+      toast.error("Thêm sản phẩm thất bại", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -179,9 +199,7 @@ const ProductDetail = () => {
         {/* Description */}
         <DetailDesc>
           <DescTitle>
-            <Divider orientation="horizontal" flexItem />
             <TitleText>Description</TitleText>
-            <Divider orientation="horizontal" flexItem />
           </DescTitle>
           <DescriptionText>
             Embodying the raw, wayward spirit of rock ‘n’ roll, the Kilburn
@@ -393,7 +411,6 @@ const LoadingContainer = styled("div")({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "100vh",
 });
 
 const DetailDesc = styled("div")({

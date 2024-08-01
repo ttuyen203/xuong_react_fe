@@ -1,7 +1,58 @@
 import { styled } from "@mui/material/styles";
 import Tagline from "../../components/Tagline";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
+import { BASE_URL } from "../../config";
+import { FormOrder } from "../../types/Order";
+
+interface CartProduct {
+  product: {
+    _id: string;
+    title: string;
+    image: string;
+    description: string;
+    price: number;
+    category: string;
+  };
+  quantity: number;
+}
 
 const CheckOut = () => {
+  const location = useLocation();
+  const cartProducts: CartProduct[] = location.state?.cartProducts || [];
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormOrder>();
+
+  const onSubmit = async (data: FormOrder) => {
+    const userId = localStorage.getItem("userId");
+    try {
+      const response = await axios.post(`${BASE_URL}/orders`, {
+        user: userId,
+        address: data.address,
+        phone: data.phone,
+        name: data.name,
+        payment: "COD",
+        products: cartProducts,
+      });
+      console.log("Order created successfully:", response.data);
+      alert("Order created successfully");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error deleting product from cart:",
+          error.response ? error.response.data : error.message
+        );
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    }
+  };
+
   return (
     <>
       <BannerContainer>
@@ -11,124 +62,85 @@ const CheckOut = () => {
         />
         <TextBanner>
           <TitleBanner>
-            <p>Checkout</p>
+            <p>Check Out</p>
           </TitleBanner>
           <EnglishBanner>
-            <p>Home {">"} Checkout</p>
+            <p>Home {">"} Check Out</p>
           </EnglishBanner>
         </TextBanner>
       </BannerContainer>
-      {/* Checkout */}
       <Section>
-        <SectionTitle>Billing details</SectionTitle>
-        <CheckoutSpace>
-          <ShippingInfo>
-            <ShippingFullname>
-              <FirstName>
-                <Label>First Name</Label>
-                <br />
-                <Input type="text" />
-              </FirstName>
-              <LastName>
-                <Label>Last Name</Label>
-                <br />
-                <Input type="text" />
-              </LastName>
-            </ShippingFullname>
-            <Label>Company Name (Optional)</Label>
-            <br />
-            <Input type="text" />
-            <br />
-            <Label>Country / Region</Label>
-            <br />
-            <Select>
-              <option value="Sri Lanka">Sri Lanka</option>
-              <option value="Viet Nam">Viet Nam</option>
-            </Select>
-            <br />
-            <Label>Street address</Label>
-            <br />
-            <Input type="text" />
-            <br />
-            <Label>Town / City</Label>
-            <br />
-            <Input type="text" />
-            <br />
-            <Label>Province</Label>
-            <br />
-            <Select>
-              <option value="Western Province">Western Province</option>
-              <option value="Viet Nam">Viet Nam</option>
-            </Select>
-            <br />
-            <Label>ZIP Code</Label>
-            <br />
-            <Input type="text" />
-            <br />
-            <Label>Phone</Label>
-            <br />
-            <Input type="text" />
-            <br />
-            <Label>Email address</Label>
-            <br />
-            <Input type="email" />
-            <br />
-            <Input type="text" placeholder="Additional information" />
-          </ShippingInfo>
-          <Terms>
-            <CheckoutBill>
-              <CheckoutBillTitle>
-                <CheckoutBillTitleText>Product</CheckoutBillTitleText>
-                <CheckoutBillTitleText>Subtotal</CheckoutBillTitleText>
-              </CheckoutBillTitle>
-              <CheckoutBillProduct>
-                <p className="text-gray">Asgaard sofa x 1</p>
-                <p>25.000.000đ</p>
-              </CheckoutBillProduct>
-              <CheckoutBillSubtotal>
-                <p>Subtotal</p>
-                <p>25.000.000đ</p>
-              </CheckoutBillSubtotal>
-              <CheckoutBillTotal>
-                <p>Total</p>
-                <CheckoutTotal>50.000.000đ</CheckoutTotal>
-              </CheckoutBillTotal>
-            </CheckoutBill>
-            <TermsContent>
-              <form>
-                <input type="radio" value="" checked />
-                <Label>Direct Bank Transfer</Label>
-                <br />
-                <p className="text-gray">
-                  Make your payment directly into our bank account. Please use
-                  your Order ID as the payment reference. Your order will not be
-                  shipped until the funds have cleared in our account.
-                </p>
-                <input type="radio" value="" />
-                <Label className="text-gray">Direct Bank Transfer</Label>
-                <br />
-                <input type="radio" value="" />
-                <Label className="text-gray">Cash On Delivery</Label>
-                <br />
-                <p>
-                  Your personal data will be used to support your experience
-                  throughout this website, to manage access to your account, and
-                  for other purposes described in our privacy policy.
-                </p>
-              </form>
-            </TermsContent>
-            <PlaceOrder>
-              <BtnPlaceOrder>Place order</BtnPlaceOrder>
-            </PlaceOrder>
-          </Terms>
-        </CheckoutSpace>
+        <FormSection onSubmit={handleSubmit(onSubmit)}>
+          <FormTitle>Billing Details</FormTitle>
+          <FormContainer>
+            <InputContainer>
+              <Label>Name</Label>
+              <Input {...register("name", { required: "Name is required" })} />
+              {errors.name && <Error>{errors.name.message}</Error>}
+            </InputContainer>
+
+            <InputContainer>
+              <Label>Phone</Label>
+              <Input
+                {...register("phone", { required: "Phone number is required" })}
+              />
+              {errors.phone && <Error>{errors.phone.message}</Error>}
+            </InputContainer>
+
+            <InputContainer>
+              <Label>Street Address</Label>
+              <Input
+                {...register("address", {
+                  required: "Street address is required",
+                })}
+              />
+              {errors.address && <Error>{errors.address.message}</Error>}
+            </InputContainer>
+          </FormContainer>
+          <BtnCheckout type="submit">Place Order</BtnCheckout>
+        </FormSection>
+
+        <CartSection>
+          <CartTitle>Order Summary</CartTitle>
+          <CartList>
+            <thead>
+              <CartListHeader>
+                <CartListHeaderCell>Product</CartListHeaderCell>
+                <CartListHeaderCell>Quantity</CartListHeaderCell>
+                <CartListHeaderCell>Price</CartListHeaderCell>
+                <CartListHeaderCell>Total</CartListHeaderCell>
+              </CartListHeader>
+            </thead>
+            <tbody>
+              {cartProducts.map((item) => (
+                <CartListRow key={item.product._id}>
+                  <CartListCell>{item.product.title}</CartListCell>
+                  <CartListCell>{item.quantity}</CartListCell>
+                  <CartListCell>{item.product.price}</CartListCell>
+                  <CartListCell>
+                    {item.product.price * item.quantity}
+                  </CartListCell>
+                </CartListRow>
+              ))}
+            </tbody>
+          </CartList>
+          <TotalContainer>
+            <TotalLabel>Total:</TotalLabel>
+            <TotalAmount>
+              {cartProducts.reduce(
+                (sum, item) => sum + item.product.price * item.quantity,
+                0
+              )}
+            </TotalAmount>
+          </TotalContainer>
+        </CartSection>
       </Section>
-      {/* Tagline */}
       <Tagline />
     </>
   );
 };
 
+// CSS
 const BannerContainer = styled("div")({
   position: "relative",
   textAlign: "center",
@@ -158,125 +170,106 @@ const EnglishBanner = styled("div")({
 const Section = styled("div")({
   paddingLeft: "8rem",
   paddingRight: "8rem",
-});
-
-const SectionTitle = styled("p")({
-  fontSize: "1.8rem",
-  fontWeight: 500,
-  paddingTop: "2rem",
-  paddingBottom: "1rem",
-});
-
-const CheckoutSpace = styled("div")({
   display: "flex",
-  flexDirection: "row",
-  gap: "10rem",
+  gap: "4rem",
+  marginTop: "5rem",
 });
 
-const ShippingInfo = styled("form")({
-  width: "50%",
+const FormSection = styled("form")({
+  width: "60%",
 });
 
-const Terms = styled("div")({
-  width: "50%",
+const FormTitle = styled("h2")({
+  marginBottom: "2rem",
+  fontSize: "1.5rem",
+});
+
+const FormContainer = styled("div")({
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "1rem",
+});
+
+const InputContainer = styled("div")({
+  display: "flex",
+  flexDirection: "column",
 });
 
 const Label = styled("label")({
-  fontWeight: 500,
+  marginBottom: "0.5rem",
+  fontSize: "1rem",
 });
 
 const Input = styled("input")({
-  marginTop: "10px",
-  marginBottom: "20px",
-  width: "100%",
-  height: "50px",
+  padding: "0.5rem",
+  fontSize: "1rem",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+});
+
+const Error = styled("span")({
+  color: "red",
+  fontSize: "0.875rem",
+  marginTop: "0.5rem",
+});
+
+const BtnCheckout = styled("button")({
+  border: "none",
+  padding: "10px 30px",
   borderRadius: "10px",
-  border: "1px solid #9f9f9f",
-  "&::placeholder": {
-    padding: "10px",
-  },
-});
-
-const Select = styled("select")({
-  marginTop: "10px",
-  marginBottom: "20px",
-  width: "100%",
-  height: "50px",
-  borderRadius: "10px",
-  border: "1px solid #9f9f9f",
-});
-
-const ShippingFullname = styled("div")({
-  display: "flex",
-  justifyContent: "space-between",
-  width: "100%",
-  gap: "2rem",
-});
-
-const FirstName = styled("div")({
-  width: "100%",
-});
-
-const LastName = styled("div")({
-  width: "100%",
-});
-
-const CheckoutBill = styled("div")({
-  borderBottom: "1px solid #d9d9d9",
-});
-
-const CheckoutBillTitle = styled("div")({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "15px",
-});
-
-const CheckoutBillProduct = styled("div")({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "15px",
-});
-
-const CheckoutBillSubtotal = styled("div")({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "15px",
-});
-
-const CheckoutBillTotal = styled("div")({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "15px",
-  marginBottom: "20px",
-});
-
-const CheckoutBillTitleText = styled("p")({
-  fontSize: "24px",
-  fontWeight: 500,
-});
-
-const CheckoutTotal = styled("p")({
-  fontWeight: 700,
-  fontSize: "24px",
-  color: "#b88e2f",
-});
-
-const TermsContent = styled("div")({
-  marginBottom: "20px",
-});
-
-const PlaceOrder = styled("div")({
-  width: "100%",
-  marginTop: "50px",
+  marginTop: "20px",
+  backgroundColor: "#000",
+  color: "#fff",
   cursor: "pointer",
-  display: "flex",
-  justifyContent: "center",
+  fontSize: "1rem",
 });
 
-const BtnPlaceOrder = styled("p")({
-  border: "1px solid #000",
-  padding: "10px 50px",
-  borderRadius: "10px",
+const CartSection = styled("div")({
+  width: "35%",
+  padding: "1rem",
+  backgroundColor: "#f9f1e7",
+});
+
+const CartTitle = styled("h2")({
+  marginBottom: "2rem",
+  fontSize: "1.5rem",
+});
+
+const CartList = styled("table")({
+  width: "100%",
+  borderSpacing: 0,
+});
+
+const CartListHeader = styled("tr")({
+  backgroundColor: "#f9f1e7",
+});
+
+const CartListHeaderCell = styled("th")({
+  padding: "10px 0",
+  textAlign: "left",
+});
+
+const CartListRow = styled("tr")({});
+
+const CartListCell = styled("td")({
+  padding: "10px 0",
+});
+
+const TotalContainer = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  marginTop: "2rem",
+});
+
+const TotalLabel = styled("p")({
+  fontSize: "1.25rem",
+  fontWeight: 600,
+});
+
+const TotalAmount = styled("p")({
+  fontSize: "1.25rem",
+  fontWeight: 600,
+  color: "#b88e2f",
 });
 
 export default CheckOut;

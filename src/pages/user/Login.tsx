@@ -6,8 +6,110 @@ import { useForm } from "react-hook-form";
 import { User } from "../../types/User";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { Bounce, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>();
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: User) => {
+    try {
+      const res = await axios.post("http://localhost:3000/auth/login", data);
+      toast.success("Đăng nhập thành công!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      console.log(res);
+      navigate("/");
+      localStorage.setItem("access-token", res.data.accessToken);
+      localStorage.setItem("userId", res.data.userInfo.userId);
+    } catch (err) {
+      toast.error("Đã xảy ra lỗi! Vui lòng kiểm tra lại Email và Password", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      console.error(err);
+    }
+  };
+
+  return (
+    <LoginSpace>
+      <LoginContainer>
+        <BtnBack onClick={() => navigate("/")}>
+          <BackIcon>
+            <CloseSharpIcon />
+          </BackIcon>
+        </BtnBack>
+
+        <FormLogin onSubmit={handleSubmit(onSubmit)}>
+          <FormTitle>Login</FormTitle>
+          <FormLabel htmlFor="email">Email:</FormLabel>
+          <FormInput
+            id="email"
+            type="email"
+            variant="outlined"
+            placeholder="Nhập email của bạn"
+            {...register("email", {
+              required: "* Vui lòng nhập email",
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                message: "* Vui lòng nhập email hợp lệ",
+              },
+            })}
+          />
+          {errors.email && <FieldErr>{errors.email.message}</FieldErr>}
+
+          <FormLabel htmlFor="password">Password:</FormLabel>
+          <FormInput
+            id="password"
+            type="password"
+            variant="outlined"
+            placeholder="Nhập mật khẩu của bạn"
+            {...register("password", {
+              required: "* Vui lòng nhập mật khẩu",
+              minLength: {
+                value: 6,
+                message: "* Mật khẩu phải có ít nhất 6 ký tự",
+              },
+            })}
+          />
+          {errors.password && <FieldErr>{errors.password.message}</FieldErr>}
+
+          <BtnSubmit>
+            <SubmitButton type="submit">Login</SubmitButton>
+          </BtnSubmit>
+        </FormLogin>
+
+        <SocialLogin>
+          <SocialFb>Facebook</SocialFb>
+          <SocialGg>Google</SocialGg>
+        </SocialLogin>
+      </LoginContainer>
+    </LoginSpace>
+  );
+};
+
+//css
 const LoginSpace = styled("div")({
   display: "flex",
   justifyContent: "center",
@@ -119,7 +221,7 @@ const SocialBtn = styled("div")(({ theme }) => ({
   color: theme.palette.common.white,
   cursor: "pointer",
   "&:hover": {
-    opacity: 0.8, // add hover effect
+    opacity: 0.8,
   },
 }));
 
@@ -132,95 +234,5 @@ const SocialGg = styled(SocialBtn)({
   color: "#000",
   border: "1px solid #000",
 });
-
-const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<User>();
-
-  const navigate = useNavigate();
-
-  const onSubmit = async (data: User) => {
-    try {
-      const res = await axios.post("http://localhost:3000/auth/login", data);
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Đăng nhập thành công",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      console.log(res);
-      navigate("/");
-      localStorage.setItem("access-token", res.data.accessToken);
-      localStorage.setItem("userId", res.data.userInfo.userId);
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Đã xảy ra lỗi!",
-        text: "Vui lòng kiểm tra lại Email và Password",
-      });
-      console.error(err);
-    }
-  };
-
-  return (
-    <LoginSpace>
-      <LoginContainer>
-        <BtnBack onClick={() => navigate("/")}>
-          <BackIcon>
-            <CloseSharpIcon />
-          </BackIcon>
-        </BtnBack>
-
-        <FormLogin onSubmit={handleSubmit(onSubmit)}>
-          <FormTitle>Login</FormTitle>
-          <FormLabel htmlFor="email">Email:</FormLabel>
-          <FormInput
-            id="email"
-            type="email"
-            variant="outlined"
-            placeholder="Nhập email của bạn"
-            {...register("email", {
-              required: "* Vui lòng nhập email",
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                message: "* Vui lòng nhập email hợp lệ",
-              },
-            })}
-          />
-          {errors.email && <FieldErr>{errors.email.message}</FieldErr>}
-
-          <FormLabel htmlFor="password">Password:</FormLabel>
-          <FormInput
-            id="password"
-            type="password"
-            variant="outlined"
-            placeholder="Nhập mật khẩu của bạn"
-            {...register("password", {
-              required: "* Vui lòng nhập mật khẩu",
-              minLength: {
-                value: 6,
-                message: "* Mật khẩu phải có ít nhất 6 ký tự",
-              },
-            })}
-          />
-          {errors.password && <FieldErr>{errors.password.message}</FieldErr>}
-
-          <BtnSubmit>
-            <SubmitButton type="submit">Login</SubmitButton>
-          </BtnSubmit>
-        </FormLogin>
-
-        <SocialLogin>
-          <SocialFb>Facebook</SocialFb>
-          <SocialGg>Google</SocialGg>
-        </SocialLogin>
-      </LoginContainer>
-    </LoginSpace>
-  );
-};
 
 export default Login;

@@ -10,17 +10,24 @@ import { AppDispatch, RootState } from "../../redux/store";
 import { CircularProgress, styled } from "@mui/material";
 
 const Home: React.FC = () => {
+  // Khai báo dispatch để gửi các action tới Redux store
   const dispatch: AppDispatch = useDispatch();
+
+  // Lấy trạng thái loading từ Redux store
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
+  // Sử dụng useEffect để cập nhật trạng thái loading khi component được mount
   useEffect(() => {
+    // Bắt đầu trạng thái loading
     dispatch(setLoading(true));
 
+    // Dừng trạng thái loading sau 
     setTimeout(() => {
       dispatch(setLoading(false));
-    }, 2000);
+    }, 500);
   }, [dispatch]);
 
+  // Nếu đang trong trạng thái loading, hiển thị vòng tròn tải
   if (isLoading) {
     return (
       <LoadingContainer>
@@ -29,6 +36,7 @@ const Home: React.FC = () => {
     );
   }
 
+  // Nếu không còn trạng thái loading, hiển thị các thành phần khác của trang
   return (
     <>
       <Banner />
