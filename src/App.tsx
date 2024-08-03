@@ -14,6 +14,8 @@ import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import NotFound from "./components/NotFound";
 import Cart from "./pages/client/Cart";
 import CheckOut from "./pages/client/CheckOut";
+import ListOrder from "./pages/admin/order/ListOrder";
+import DetailOrder from "./pages/admin/order/DetailOrder";
 
 const routeConfig = [
   {
@@ -28,6 +30,9 @@ const routeConfig = [
       { path: "category/list", element: <ListCategory /> },
       { path: "category/add", element: <AddCategory /> },
       { path: "category/:id/update", element: <UpdateCategory /> },
+      // Order
+      { path: "order/list", element: <ListOrder /> },
+      { path: "order/:id/detail", element: <DetailOrder /> },
     ],
   },
   {

@@ -38,7 +38,7 @@ const Sidebar = () => {
         <MenuItem to="/admin/dashboard">Dashboard</MenuItem>
         <MenuItem to="/admin/category/list">Categories</MenuItem>
         <MenuItem to="/admin/product/list">Products</MenuItem>
-        <MenuItem to="/admin/cart">Cart</MenuItem>
+        <MenuItem to="/admin/order/list">Order</MenuItem>
         <MenuItem to="/admin/account">Account</MenuItem>
       </Box>
       {/* <UserBox>

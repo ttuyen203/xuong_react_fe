@@ -2,9 +2,10 @@ import { styled } from "@mui/material/styles";
 import Tagline from "../../components/Tagline";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
 import { FormOrder } from "../../types/Order";
+import { Bounce, toast } from "react-toastify";
 
 interface CartProduct {
   product: {
@@ -20,6 +21,7 @@ interface CartProduct {
 
 const CheckOut = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const cartProducts: CartProduct[] = location.state?.cartProducts || [];
 
   const {
@@ -40,7 +42,18 @@ const CheckOut = () => {
         products: cartProducts,
       });
       console.log("Order created successfully:", response.data);
-      alert("Order created successfully");
+      toast.success("Đặt hàng thành công", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      navigate("/");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error(

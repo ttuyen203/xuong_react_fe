@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../../config";
 
 const Login = () => {
   const {
@@ -20,7 +21,7 @@ const Login = () => {
 
   const onSubmit = async (data: User) => {
     try {
-      const res = await axios.post("http://localhost:3000/auth/login", data);
+      const res = await axios.post(BASE_URL + "/auth/login", data);
       toast.success("Đăng nhập thành công!", {
         position: "top-right",
         autoClose: 5000,

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../../config";
 
 const Register = () => {
   const {
@@ -19,7 +20,7 @@ const Register = () => {
 
   const onSubmit = async (data: User) => {
     try {
-      const res = await axios.post("http://localhost:3000/auth/register", data);
+      const res = await axios.post(BASE_URL + "/auth/register", data);
       toast.success("Đăng ký thành công! Bạn có thể đăng nhập ngay.", {
         position: "top-right",
         autoClose: 5000,
