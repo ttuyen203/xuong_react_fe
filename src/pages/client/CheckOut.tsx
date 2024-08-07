@@ -118,7 +118,7 @@ const CheckOut = () => {
           <CartList>
             <thead>
               <CartListHeader>
-                <CartListHeaderCell>Product</CartListHeaderCell>
+                <CartListHeaderProduct>Product</CartListHeaderProduct>
                 <CartListHeaderCell>Quantity</CartListHeaderCell>
                 <CartListHeaderCell>Price</CartListHeaderCell>
                 <CartListHeaderCell>Total</CartListHeaderCell>
@@ -127,11 +127,11 @@ const CheckOut = () => {
             <tbody>
               {cartProducts.map((item) => (
                 <CartListRow key={item.product._id}>
-                  <CartListCell>{item.product.title}</CartListCell>
+                  <CartListProduct>{item.product.title}</CartListProduct>
                   <CartListCell>{item.quantity}</CartListCell>
-                  <CartListCell>{item.product.price}</CartListCell>
+                  <CartListCell>${item.product.price}</CartListCell>
                   <CartListCell>
-                    {item.product.price * item.quantity}
+                    ${item.product.price * item.quantity}
                   </CartListCell>
                 </CartListRow>
               ))}
@@ -140,6 +140,7 @@ const CheckOut = () => {
           <TotalContainer>
             <TotalLabel>Total:</TotalLabel>
             <TotalAmount>
+              $
               {cartProducts.reduce(
                 (sum, item) => sum + item.product.price * item.quantity,
                 0
@@ -259,13 +260,25 @@ const CartListHeader = styled("tr")({
 
 const CartListHeaderCell = styled("th")({
   padding: "10px 0",
+  textAlign: "center",
+});
+
+const CartListHeaderProduct = styled("th")({
+  padding: "10px 0",
   textAlign: "left",
+  width: "40%",
 });
 
 const CartListRow = styled("tr")({});
 
 const CartListCell = styled("td")({
   padding: "10px 0",
+  textAlign: "center",
+});
+
+const CartListProduct = styled("td")({
+  padding: "10px 0",
+  textAlign: "left",
 });
 
 const TotalContainer = styled("div")({
