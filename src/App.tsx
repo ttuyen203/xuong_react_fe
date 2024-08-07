@@ -16,6 +16,7 @@ import Cart from "./pages/client/Cart";
 import CheckOut from "./pages/client/CheckOut";
 import ListOrder from "./pages/admin/order/ListOrder";
 import DetailOrder from "./pages/admin/order/DetailOrder";
+import ShopPage from "./pages/client/ShopPage";
 
 const routeConfig = [
   {
@@ -43,6 +44,7 @@ const routeConfig = [
       { path: "home", element: <Home /> },
       { path: "product/:id", element: <ProductDetail /> },
       { path: "/product/not-found", element: <NotFound /> },
+      { path: "/shop", element: <ShopPage /> },
       { path: "/cart", element: <Cart /> },
       { path: "/check-out", element: <CheckOut /> },
     ],
