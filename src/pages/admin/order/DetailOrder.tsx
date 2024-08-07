@@ -102,9 +102,9 @@ const DetailOrder = () => {
                 <TableRow>
                   <TableCell>Title</TableCell>
                   <TableCell>Image</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Quantity</TableCell>
-                  <TableCell>Total</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>Price</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>Quantity</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>Total</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -120,10 +120,14 @@ const DetailOrder = () => {
                           width="50"
                         />
                       </TableCell>
-                      <TableCell>{product?.price}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>
-                        {(product?.price || 0) * item.quantity}
+                      <TableCell sx={{ textAlign: "center" }}>
+                        ${product?.price}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {item.quantity}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        ${(product?.price || 0) * item.quantity}
                       </TableCell>
                     </TableRow>
                   );
@@ -133,7 +137,7 @@ const DetailOrder = () => {
                     <Typography variant="h6">Total Amount</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="h6">{totalAmount}</Typography>
+                    <Typography variant="h6">${totalAmount}</Typography>
                   </TableCell>
                 </TableRow>
               </TableBody>

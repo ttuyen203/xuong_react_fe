@@ -79,7 +79,7 @@ const ListOrder = () => {
                 <TableCell>Address</TableCell>
                 <TableCell>Phone</TableCell>
                 <TableCell>Payment</TableCell>
-                <TableCell align="center">Products</TableCell>
+                <TableCell align="center">Detail Order</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
