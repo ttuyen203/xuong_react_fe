@@ -138,10 +138,10 @@ const Cart = () => {
                   <CartListImage src={item.product.image} alt="Product" />
                 </CartListCell>
                 <CartListCell>{item.product.title}</CartListCell>
-                <CartListCell>{item.product.price}</CartListCell>
+                <CartListCell>${item.product.price}</CartListCell>
                 <CartListCell>{item.quantity}</CartListCell>
                 <CartListCell>
-                  {item.product.price * item.quantity}
+                  ${item.product.price * item.quantity}
                 </CartListCell>
                 <CartListCell>
                   <DeleteForeverIcon
@@ -158,6 +158,7 @@ const Cart = () => {
           <BillTotal>
             <BillTitle>Total</BillTitle>
             <PriceTotal>
+              $
               {cart.products.reduce(
                 (sum, item) => sum + item.product.price * item.quantity,
                 0
@@ -233,7 +234,7 @@ const CartListHeader = styled("tr")({
 
 const CartListHeaderCell = styled("th")({
   width: "20%",
-  textAlign: "left",
+  textAlign: "center",
   padding: "10px 0",
 });
 
@@ -249,6 +250,7 @@ const CartListImage = styled("img")({
 
 const CartListCell = styled("td")({
   padding: "10px 0",
+  textAlign: "center",
 });
 
 const CartBill = styled("div")({
