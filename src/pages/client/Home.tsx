@@ -21,7 +21,7 @@ const Home: React.FC = () => {
     // Bắt đầu trạng thái loading
     dispatch(setLoading(true));
 
-    // Dừng trạng thái loading sau 
+    // Dừng trạng thái loading sau
     setTimeout(() => {
       dispatch(setLoading(false));
     }, 500);
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
   return (
     <>
       <Banner />
-      <ProductList />
+      <ProductList limit={4} />
       <Shop />
       <Blog />
       <Tagline />

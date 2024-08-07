@@ -202,24 +202,54 @@ const ProductDetail = () => {
             <TitleText>Description</TitleText>
           </DescTitle>
           <DescriptionText>
-            Embodying the raw, wayward spirit of rock ‘n’ roll, the Kilburn
-            portable active stereo speaker takes the unmistakable look and sound
-            of Marshall, unplugs the chords, and takes the show on the road.
+            Our shoes embody the spirit of style, comfort, and innovation. Each
+            pair is meticulously designed to cater to the needs of modern
+            footwear enthusiasts, combining aesthetic appeal with functional
+            excellence. Whether you're hitting the gym, running errands, or
+            stepping out for a casual evening, our shoes provide the perfect
+            blend of performance and elegance.
           </DescriptionText>
           <DescriptionText>
-            Weighing in under 7 pounds, the Kilburn is a lightweight piece of
-            vintage styled engineering. Setting the bar as one of the
-            loudestinfo speakers in its class, the Kilburn is a compact,
-            stout-hearted hero with a well-balanced audio which boasts a clear
-            midrange and extended highs for a sound that is both articulate and
-            pronounced. The analogue knobs allow you to fine tune the controls
-            to your personal preferences while the guitar-influenced leather
-            strap enables easy and stylish travel.
+            Crafted with high-quality materials, our shoes offer unparalleled
+            durability and longevity. The upper is made from breathable,
+            flexible fabrics that adapt to the shape of your foot, ensuring a
+            snug yet comfortable fit. The insole is cushioned with advanced foam
+            technology, providing exceptional support and shock absorption,
+            reducing the strain on your feet even during prolonged use.
           </DescriptionText>
-          <DescImgContainer>
-            <DescImage src="./img/height.jpg" alt="" />
-            <DescImage src="./img/height.jpg" alt="" />
-          </DescImgContainer>
+          <DescriptionText>
+            The outsole is engineered for superior grip and traction, making our
+            shoes suitable for a variety of terrains and activities. From urban
+            landscapes to rugged trails, you can trust our shoes to deliver
+            stability and confidence with every step. Additionally, the stylish
+            design elements, such as sleek lines, vibrant colors, and unique
+            patterns, make our shoes a standout addition to any wardrobe.
+          </DescriptionText>
+          <DescriptionText>
+            Understanding that every individual has unique preferences, we offer
+            customizable features, including adjustable laces and removable
+            insoles, allowing you to tailor the fit and feel of the shoes to
+            your liking. Our commitment to quality extends to the smallest
+            details, with reinforced stitching and premium finishes that add to
+            the overall durability and aesthetic appeal of the shoes.
+          </DescriptionText>
+          <DescriptionText>
+            Whether you are an athlete seeking performance-driven footwear or a
+            fashion-conscious individual looking for stylish yet comfortable
+            shoes, our collection caters to all tastes and requirements.
+            Experience the perfect harmony of style, comfort, and innovation
+            with our latest range of shoes.
+          </DescriptionText>
+          {/* <DescImgContainer>
+            <DescImage
+              src="https://example.com/image1.jpg"
+              alt="Shoe Image 1"
+            />
+            <DescImage
+              src="https://example.com/image2.jpg"
+              alt="Shoe Image 2"
+            />
+          </DescImgContainer> */}
         </DetailDesc>
       </SectionContainer>
     </div>
@@ -396,16 +426,16 @@ const DescriptionText = styled("p")({
   marginTop: "10px",
 });
 
-const DescImgContainer = styled("div")({
-  display: "flex",
-  gap: "10px",
-  marginTop: "20px",
-});
+// const DescImgContainer = styled("div")({
+//   display: "flex",
+//   gap: "10px",
+//   marginTop: "20px",
+// });
 
-const DescImage = styled("img")({
-  width: "50%",
-  borderRadius: "10px",
-});
+// const DescImage = styled("img")({
+//   width: "50%",
+//   borderRadius: "10px",
+// });
 
 const LoadingContainer = styled("div")({
   display: "flex",

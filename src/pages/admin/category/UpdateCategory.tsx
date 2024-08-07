@@ -82,7 +82,7 @@ const UpdateCategory = () => {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => navigate("/admin/product/list")}
+              onClick={() => navigate("/admin/category/list")}
               style={{ marginRight: "8px" }}
             >
               Back

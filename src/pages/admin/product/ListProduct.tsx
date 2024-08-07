@@ -127,7 +127,7 @@ const ListProduct = () => {
                   >
                     {d.description}
                   </TableCell>
-                  <TableCell align="center">{d.price}</TableCell>
+                  <TableCell align="center">${d.price}</TableCell>
                   <TableCell align="center">{d.category.name}</TableCell>
                   <TableCell align="center">{d.show ? "✓" : "✗"}</TableCell>
                   <TableCell align="center">

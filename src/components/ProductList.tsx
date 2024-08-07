@@ -9,7 +9,6 @@ import {
   CardMedia,
   CardContent,
   IconButton,
-  Chip,
 } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import CompareIcon from "@mui/icons-material/Compare";
@@ -18,18 +17,17 @@ import { ApiResPro, Product } from "../types/Product";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import Swal from "sweetalert2";
-// import CircularProgress from "@mui/material/CircularProgress";
 
-// const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+interface ProductListProps {
+  limit?: number; // Optional prop to limit the number of products displayed
+}
 
-const ProductList = () => {
+const ProductList: React.FC<ProductListProps> = ({ limit }) => {
   const [data, setData] = useState<Product[]>([]);
-  // const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // await delay(1500);
         const response = await axios.get<ApiResPro>(`${BASE_URL}/products`);
         setData(response.data.data);
         console.log("Data", response.data);
@@ -40,33 +38,20 @@ const ProductList = () => {
           text: "Something went wrong!",
         });
         console.log(err);
-      } finally {
-        // setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <Box sx={{ display: "flex" }}>
-  //         <CircularProgress />
-  //       </Box>
-  //       {/* <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin dark:border-violet-600">
-  //         Loading...
-  //       </div> */}
-  //     </div>
-  //   );
-  // }
+  const displayedProducts = limit ? data.slice(0, limit) : data;
 
   return (
     <Section>
       <SectionTitle>New</SectionTitle>
       <SectionContent>
         <ListProduct container spacing={2}>
-          {data?.map((product, index) => (
+          {displayedProducts?.map((product, index) => (
             <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
               <CardProduct>
                 <ImgProduct image={product?.image} />
@@ -77,7 +62,6 @@ const ProductList = () => {
                   </DescriptionProduct>
                   <PriceProduct>
                     <Price>{product?.price}$</Price>
-                    <PriceProductOld>{product?.price}$</PriceProductOld>
                   </PriceProduct>
                 </InfoProduct>
                 <Overlay>
@@ -89,20 +73,16 @@ const ProductList = () => {
                     <AdditionalOptions>
                       <IconButton color="inherit">
                         <ShareIcon />
-                        {/* <TextIcon>Share</TextIcon> */}
                       </IconButton>
                       <IconButton color="inherit">
                         <CompareIcon />
-                        {/* <TextIcon>Compare</TextIcon> */}
                       </IconButton>
                       <IconButton color="inherit">
                         <FavoriteIcon />
-                        {/* <TextIcon>Like</TextIcon> */}
                       </IconButton>
                     </AdditionalOptions>
                   </OverlayContent>
                 </Overlay>
-                <DiscountTag label="" />
               </CardProduct>
             </Grid>
           ))}
@@ -157,6 +137,11 @@ const InfoProduct = styled(CardContent)({
 const NameProduct = styled(Typography)({
   fontSize: "1.5rem",
   fontWeight: 600,
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  width: "200px",
+  paddingTop: "8px",
+  overflow: "hidden",
 });
 
 const DescriptionProduct = styled(Typography)({
@@ -179,12 +164,6 @@ const PriceProduct = styled(Box)({
 const Price = styled(Typography)({
   fontSize: "1.2rem",
   fontWeight: 600,
-});
-
-const PriceProductOld = styled(Typography)({
-  fontSize: "1.2rem",
-  textDecoration: "line-through",
-  opacity: 0.6,
 });
 
 const Overlay = styled(Box)({
@@ -227,23 +206,6 @@ const AdditionalOptions = styled(Box)({
   display: "flex",
   gap: "1rem",
   justifyContent: "center",
-});
-
-// const TextIcon = styled("div")({
-//   fontSize: "14px",
-//   marginLeft: "5px",
-// });
-
-const DiscountTag = styled(Chip)({
-  position: "absolute",
-  borderRadius: "50%",
-  backgroundColor: "rgb(233, 113, 113)",
-  width: 40,
-  height: 40,
-  top: "5%",
-  right: "10%",
-  color: "white",
-  textAlign: "center",
 });
 
 export default ProductList;
