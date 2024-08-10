@@ -67,7 +67,7 @@ const ProductDetail = () => {
         product: data?._id,
         quantity,
       });
-      toast.success("Sản phẩm đã được thêm vào giỏ hàng", {
+      toast.success("The product has been added to the cart", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -83,7 +83,7 @@ const ProductDetail = () => {
       //   "Error details:",
       //   error.response ? error.response.data : error.message
       // );
-      toast.error("Thêm sản phẩm thất bại", {
+      toast.error("Failed to add the product", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

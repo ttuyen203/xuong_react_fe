@@ -42,7 +42,7 @@ const CheckOut = () => {
         products: cartProducts,
       });
       console.log("Order created successfully:", response.data);
-      toast.success("Đặt hàng thành công", {
+      toast.success("Order placed successfully", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
