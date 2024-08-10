@@ -21,7 +21,7 @@ const Register = () => {
   const onSubmit = async (data: User) => {
     try {
       const res = await axios.post(BASE_URL + "/auth/register", data);
-      toast.success("Đăng ký thành công! Bạn có thể đăng nhập ngay.", {
+      toast.success("Registration successful! Login now!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -35,7 +35,7 @@ const Register = () => {
       console.log(res);
       navigate("/login");
     } catch (err) {
-      toast.error("Đã xảy ra lỗi! Vui lòng kiểm tra lại thông tin đăng ký.", {
+      toast.error("Registration failed, please try again!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -60,12 +60,12 @@ const Register = () => {
             id="email"
             type="email"
             variant="outlined"
-            placeholder="Nhập email của bạn"
+            placeholder="Enter your email"
             {...register("email", {
-              required: "* Vui lòng nhập email",
+              required: "* Please enter your email",
               pattern: {
                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                message: "* Vui lòng nhập email hợp lệ",
+                message: "* Please enter a valid email",
               },
             })}
           />
@@ -76,12 +76,12 @@ const Register = () => {
             id="password"
             type="password"
             variant="outlined"
-            placeholder="Nhập mật khẩu của bạn"
+            placeholder="Enter your password"
             {...register("password", {
-              required: "* Vui lòng nhập mật khẩu",
+              required: "* Please enter your password",
               minLength: {
                 value: 6,
-                message: "* Mật khẩu phải có ít nhất 6 ký tự",
+                message: "* Password must be at least 6 characters long",
               },
             })}
           />
@@ -90,13 +90,18 @@ const Register = () => {
           <BtnSubmit>
             <SubmitButton type="submit">Register</SubmitButton>
           </BtnSubmit>
+
+          <LoginPrompt>
+            <PromptText>Already have an account? </PromptText>
+            <LoginLink onClick={() => navigate("/login")}>Log in now</LoginLink>
+          </LoginPrompt>
         </FormRegister>
       </RegisterContainer>
     </RegisterSpace>
   );
 };
 
-//css
+// CSS
 const RegisterSpace = styled("div")({
   display: "flex",
   justifyContent: "center",
@@ -172,6 +177,29 @@ const SubmitButton = styled(Button)({
   },
   "&:active": {
     backgroundColor: "#c8beb3", // even darker shade on active
+  },
+});
+
+const LoginPrompt = styled("div")({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: "20px",
+  fontSize: "16px",
+});
+
+const PromptText = styled("span")({
+  color: "#b88e2f",
+  marginRight: "5px",
+  fontWeight: "500",
+});
+
+const LoginLink = styled("span")({
+  color: "#0171d3",
+  fontWeight: 700,
+  cursor: "pointer",
+  "&:hover": {
+    textDecoration: "underline",
   },
 });
 

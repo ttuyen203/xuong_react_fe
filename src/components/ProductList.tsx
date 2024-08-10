@@ -9,6 +9,7 @@ import {
   CardMedia,
   CardContent,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import CompareIcon from "@mui/icons-material/Compare";
@@ -19,15 +20,17 @@ import { BASE_URL } from "../config";
 import Swal from "sweetalert2";
 
 interface ProductListProps {
-  limit?: number; // Optional prop to limit the number of products displayed
+  limit?: number;
 }
 
 const ProductList: React.FC<ProductListProps> = ({ limit }) => {
   const [data, setData] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get<ApiResPro>(`${BASE_URL}/products`);
         setData(response.data.data);
         console.log("Data", response.data);
@@ -38,6 +41,8 @@ const ProductList: React.FC<ProductListProps> = ({ limit }) => {
           text: "Something went wrong!",
         });
         console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -45,6 +50,14 @@ const ProductList: React.FC<ProductListProps> = ({ limit }) => {
   }, []);
 
   const displayedProducts = limit ? data.slice(0, limit) : data;
+
+  if (isLoading) {
+    return (
+      <LoadingContainer>
+        <CircularProgress />
+      </LoadingContainer>
+    );
+  }
 
   return (
     <Section>
@@ -92,7 +105,13 @@ const ProductList: React.FC<ProductListProps> = ({ limit }) => {
   );
 };
 
-// CSS
+// CSS cho LoadingContainer
+const LoadingContainer = styled("div")({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});
+
 const Section = styled(Box)({
   paddingLeft: "8rem",
   paddingRight: "8rem",
